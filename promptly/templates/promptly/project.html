@@ -1,0 +1,131 @@
+{% extends 'promptly/base.html' %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary mb-4">{{ project.text }}</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<div class="mb-3 d-flex flex-wrap gap-2">
+  <a href="{% url 'promptly:new_task' project.id %}" class="btn btn-success">
+    + Add New Task
+  </a>
+
+  <!-- Edit project Button -->
+  <a href="{% url 'promptly:edit_project' project.id %}" class="btn btn-outline-primary">
+    Edit Project
+  </a>
+
+  <!-- Delete project Button -->
+  <button type="button" class="btn btn-outline-danger" onclick="deleteproject({{ project.id }})">
+    Delete Project
+  </button>
+</div>
+
+{% for task in tasks %}
+<div class="card mb-3 shadow-sm card-hover">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <small class="text-muted">{{ task.date_added|date:'M d, Y H:i' }} UTC</small>
+    <div class="d-flex gap-1">
+      <!-- Gradient AI Suggestion button -->
+      <button type="button" class="btn btn-sm ai-btn"
+              style="background: linear-gradient(45deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+                     color: white; border: none;"
+              data-task-id="{{ task.id }}" data-task-text="{{ task.text }}">
+        AI Suggestion
+      </button>
+
+      <!-- Edit button -->
+      <a href="{% url 'promptly:edit_task' task.id %}" class="btn btn-sm btn-outline-primary">
+        Edit
+      </a>
+
+      <!-- Delete button -->
+      <button type="button" class="btn btn-sm btn-outline-danger" onclick="deletetask({{ task.id }})">
+        Delete
+      </button>
+    </div>
+  </div>
+  <div class="card-body">
+    <p class="card-text" id="ai-output-{{ task.id }}">{{ task.text|linebreaks }}</p>
+  </div>
+</div>
+{% empty %}
+<p class="text-muted">There are no tasks or AI suggestions for this project yet.</p>
+{% endfor %}
+
+
+<a href="{% url 'promptly:projects' %}" class="btn btn-secondary mt-3">
+  ← Back to Projects
+</a>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+// Delete task function
+function deletetask(taskId){
+    if(!confirm("Are you sure you want to delete this task?")) return;
+    fetch(`/delete_task/${taskId}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken }
+    }).then(() => location.reload());
+}
+
+// Delete project function
+function deleteproject(projectId){
+    if(!confirm("Are you sure you want to delete this entire project? All tasks will be removed.")) return;
+    fetch(`/delete_project/${projectId}/`, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken }
+    }).then(() => {
+        window.location.href = "{% url 'promptly:projects' %}";
+    });
+}
+
+// AI Suggestion button
+document.querySelectorAll('.ai-btn').forEach(button => {
+    button.addEventListener('click', async () => {
+        const taskId = button.dataset.taskId;
+        const taskText = button.dataset.taskText || '';
+        const outputEl = document.getElementById(`ai-output-${taskId}`);
+        outputEl.innerHTML = "<em>Generating AI suggestion...</em>";
+
+        try {
+            const response = await fetch("{% url 'promptly:generate_ai' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken": csrftoken
+                },
+                body: `prompt=${encodeURIComponent(taskText)}&project_id={{ project.id }}`
+            });
+            const data = await response.json();
+
+            if(data.suggestion){
+                const suggestionText = data.suggestion.replace(/\n{3,}/g, '\n\n').trim();
+                outputEl.innerHTML = marked.parse(suggestionText);
+
+                // Save AI suggestion as a new task
+                await fetch("{% url 'promptly:new_task' project.id %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                        "X-CSRFToken": csrftoken
+                    },
+                    body: `text=${encodeURIComponent(suggestionText)}`
+                });
+
+                location.reload();
+            } else {
+                outputEl.innerText = data.error || "Failed to generate suggestion.";
+            }
+        } catch(err){
+            console.error(err);
+            outputEl.innerText = "Error generating suggestion. Check console.";
+        }
+    });
+});
+</script>
+
+{% endblock content %}

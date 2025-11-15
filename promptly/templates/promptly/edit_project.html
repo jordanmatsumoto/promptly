@@ -1,0 +1,23 @@
+{% extends "promptly/base.html" %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary mb-4">Edit Project: {{ project.text }}</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<!-- Edit Project Form -->
+<form action="{% url 'promptly:edit_project' project.id %}" method="post">
+  {% csrf_token %}
+  {{ form.as_div }}
+
+  <!-- Save Button -->
+  <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+</form>
+
+<!-- Back Button -->
+<a href="{% url 'promptly:project' project.id %}" class="btn btn-secondary mt-3">
+  ← Back to Project
+</a>
+
+{% endblock content %}

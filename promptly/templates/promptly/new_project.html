@@ -1,0 +1,32 @@
+{% extends "promptly/base.html" %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary text-center mb-4">Add a New Project</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<!-- New Project Card -->
+<div class="card shadow-sm mb-4 card-hover">
+  <div class="card-body">
+    <p class="card-text text-muted">
+      Create a new project to organize tasks and AI-generated suggestions.
+    </p>
+
+    <!-- Project Form -->
+    <form action="{% url 'promptly:new_project' %}" method="post">
+      {% csrf_token %}
+      {{ form.as_div }}
+
+      <!-- Submit Button -->
+      <button type="submit" class="btn btn-primary mt-3">Add Project</button>
+    </form>
+  </div>
+</div>
+
+<!-- Back to Projects Button -->
+<a href="{% url 'promptly:projects' %}" class="btn btn-secondary mt-2">
+  ← Back to Projects
+</a>
+
+{% endblock content %}

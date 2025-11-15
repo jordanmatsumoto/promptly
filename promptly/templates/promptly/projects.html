@@ -1,0 +1,56 @@
+{% extends 'promptly/base.html' %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary text-center mb-4">Projects</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<!-- Projects Grid -->
+<div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+  {% for project in projects %}
+    <div class="col">
+      <div class="card shadow-sm card-hover h-100">
+        <div class="card-body d-flex flex-column justify-content-between">
+          
+          <!-- Project Title -->
+          <h5 class="card-title">{{ project.text }}</h5>
+
+          <!-- Task Count -->
+          <p class="card-text text-muted">
+            {% with project.tasks.count as count %}
+              {{ count }} Task{{ count|pluralize }}
+            {% endwith %}
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="mt-3">
+            <a href="{% url 'promptly:project' project.id %}" class="btn btn-primary btn-sm">
+              View Tasks
+            </a>
+            <a href="{% url 'promptly:new_task' project.id %}" class="btn btn-success btn-sm ms-2">
+              + Add Task
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <!-- No Projects Message -->
+    <div class="col">
+      <div class="alert alert-secondary" role="alert">
+        No projects have been added yet.
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<!-- Add New Project Button -->
+<div class="mt-4">
+  <a href="{% url 'promptly:new_project' %}" class="btn btn-primary">
+    + Add New Project
+  </a>
+</div>
+
+{% endblock content %}

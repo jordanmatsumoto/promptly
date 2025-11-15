@@ -1,0 +1,89 @@
+{% extends "promptly/base.html" %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary mb-4">Project: {{ project }}</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<div class="card shadow-sm mb-4 card-hover">
+  <div class="card-body">
+    <h5 class="card-title">{{ project }}</h5>
+    <p class="card-text text-muted">Add a new task or AI suggestion below to track progress.</p>
+
+    <form id="new-task-form" action="{% url 'promptly:new_task' project.id %}" method="post">
+      {% csrf_token %}
+      {{ form.as_div }}
+
+      <!-- Buttons -->
+      <div class="d-flex flex-wrap align-items-center mt-3">
+        <button type="submit" class="btn btn-success me-2 mb-2">Add Task</button>
+        <button type="button" id="generate-ai-btn" class="btn btn-outline-primary mb-2"
+                style="background: linear-gradient(45deg, #ff6ec4, #7873f5, #4ade80, #facc15);
+                      color: white; border: none;"> 
+          Generate AI Suggestion
+        </button>
+      </div>
+      
+      <!-- AI output display -->
+      <div id="ai-suggestion-output" class="markdown-content text-muted mt-3 mb-3 text-start">
+        AI suggestion will appear here.
+      </div>
+    </form>
+  </div>
+</div>
+
+<a href="{% url 'promptly:projects' %}" class="btn btn-secondary mb-5">
+  ← Back to Projects
+</a>
+
+<!-- JS for AI button -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+document.getElementById('generate-ai-btn').addEventListener('click', async () => {
+    const outputEl = document.getElementById('ai-suggestion-output');
+    const textarea = document.querySelector('#id_text'); // Django default field ID
+
+    // Use the current textarea content as the prompt
+    const prompt = textarea.value.trim();
+    if(!prompt){
+        alert('Please enter something in the text box first.');
+        return;
+    }
+
+    outputEl.innerHTML = "<em>Generating AI suggestion...</em>";
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+    try {
+        const response = await fetch("{% url 'promptly:generate_ai' %}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "X-CSRFToken": csrftoken
+            },
+            body: `prompt=${encodeURIComponent(prompt)}&project_id={{ project.id }}`
+        });
+
+        const data = await response.json();
+        if(data.suggestion){
+            // Clean Markdown output
+            let raw = data.suggestion
+                .replace(/\n{3,}/g, '\n\n')
+                .replace(/(#+ .+)\n\s*\n/g, '$1\n');
+
+            // Render Markdown
+            outputEl.innerHTML = marked.parse(raw);
+
+            // Update textarea with AI suggestion
+            textarea.value = data.suggestion;
+        } else {
+            outputEl.innerText = data.error || "Failed to generate suggestion.";
+        }
+    } catch(err){
+        console.error(err);
+        outputEl.innerText = "Error generating suggestion. Check console.";
+    }
+});
+</script>
+
+{% endblock content %}

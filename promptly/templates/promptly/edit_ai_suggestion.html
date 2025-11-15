@@ -1,0 +1,26 @@
+{% extends "promptly/base.html" %}
+
+{% block page_header %}
+<h2 class="fw-bold text-primary mb-4">Edit AI Suggestion</h2>
+{% endblock page_header %}
+
+{% block content %}
+
+<!-- Edit AI Suggestion Card -->
+<div class="card shadow-sm mb-4 card-hover">
+  <div class="card-body">
+
+    <!-- Edit Form -->
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_div }}
+
+      <!-- Action Buttons -->
+      <button type="submit" class="btn btn-primary mt-3">Save Changes</button>
+      <a href="{% url 'promptly:ai_suggestions' %}" class="btn btn-secondary mt-3">Cancel</a>
+    </form>
+
+  </div>
+</div>
+
+{% endblock content %}

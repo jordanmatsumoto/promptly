@@ -1,0 +1,4 @@
+Django
+django-bootstrap5
+python-dotenv
+ollama
