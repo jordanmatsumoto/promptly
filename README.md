@@ -1,6 +1,6 @@
 # Promptly
 
-**Promptly** is an AI-enhanced productivity and task management web app built with **Python**, **Django**, and **Ollama’s Llama 3**. Promptly helps users organize projects, track tasks, and receive AI-generated insights to increase efficiency. This project demonstrates **task/project management**, **LLM integration**, and a clean, responsive **web interface**.
+Promptly is an AI-enhanced productivity and task management web app built with Python, Django, and Ollama’s Llama 3. Promptly helps users organize projects, track tasks, and receive AI-generated insights to increase efficiency. This project demonstrates task/project management, LLM integration, and a responsive web interface.
 
 ## Screenshots
 
@@ -69,52 +69,6 @@
 - **Search AI Suggestions:** Use the search bar on the AI Suggestions page to filter results by project or keyword.  
 - **Navigation:** Use the taskbar to quickly switch between the Main Dashboard, Projects, New Project, and AI Suggestions pages.  
 
-## Installation
-
-1. **Clone the repository**
-```bash
-git clone https://github.com/jordanmatsumoto/promptly.git
-```
-
-2. **Change directory**
-``` bash  
-cd promptly
-```
-
-3. **Create a virtual environment (optional)**
-```bash
-python -m venv venv
-source venv/bin/activate #Linux/macOS
-venv\Scripts\activate #Windows
-```
-
-4. **Install dependencies**
-``` ini  
-pip install -r requirements.txt
-```
-
-5. **Set up your environment variables**  
-Create a .env file in the project root and add:
-``` bash
-DJANGO_SECRET_KEY=your_secret_key_here
-DJANGO_DEBUG=True
-```
-
-6. **Apply migrations**
-``` bash
-python manage.py migrate
-```
-
-7. **Run the development server**
-``` bash
-python manage.py runserver
-```
-
-8. **Open the app in your browser**
-``` cpp
-http://127.0.0.1:8000/
-```
-
 ## How Promptly Works
 
 ### Navigation & Taskbar
@@ -160,46 +114,50 @@ http://127.0.0.1:8000/
 ### Authentication & Security
 - Users must create an account or log in to access their projects, tasks, and AI suggestions.  
 - Secure authentication ensures that each user’s data is private.  
-- Only the owner of a project or task can view, edit, or delete it.  
+- Only the owner of a project or task can view, edit, or delete it.
+  
+## Installation
 
-## File Structure
+1. **Clone the repository**
+```bash
+git clone https://github.com/jordanmatsumoto/promptly.git
 ```
-promptly/
-├── assets/
-│   ├── screenshots/
-│   └── gifs/  
-├── promptly/  
-│   ├── templates/  
-│   │   ├── promptly/  
-│   │   │   ├── base.html  
-│   │   │   ├── index.html  
-│   │   │   ├── projects.html  
-│   │   │   ├── project.html  
-│   │   │   ├── new_project.html  
-│   │   │   ├── edit_project.html  
-│   │   │   ├── new_task.html  
-│   │   │   ├── edit_task.html  
-│   │   │   ├── ai_suggestions.html  
-│   │   │   └── edit_ai_suggestion.html  
-│   ├── models.py  
-│   ├── views.py  
-│   ├── forms.py  
-│   ├── urls.py  
-│   ├── admin.py  
-│   └── Llama_utils.py  
-├── accounts/  
-│   ├── templates/  
-│   │   └── registration/  
-│   │       ├── login.html  
-│   │       └── register.html  
-│   ├── models.py  
-│   ├── views.py  
-│   └── urls.py  
-├── promptly_project/  
-│   ├── settings.py  
-│   ├── urls.py  
-│   ├── wsgi.py  
-│   └── asgi.py  
-├── manage.py  
-└── requirements.txt
+
+2. **Change directory**
+``` bash  
+cd promptly
+```
+
+3. **Create a virtual environment (optional)**
+```bash
+python -m venv venv
+source venv/bin/activate #Linux/macOS
+venv\Scripts\activate #Windows
+```
+
+4. **Install dependencies**
+``` ini  
+pip install -r requirements.txt
+```
+
+5. **Set up your environment variables**  
+Create a .env file in the project root and add:
+``` bash
+DJANGO_SECRET_KEY=your_secret_key_here
+DJANGO_DEBUG=True
+```
+
+6. **Apply migrations**
+``` bash
+python manage.py migrate
+```
+
+7. **Run the development server**
+``` bash
+python manage.py runserver
+```
+
+8. **Open the app in your browser**
+``` cpp
+http://127.0.0.1:8000/
 ```
